@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>countdown.js</title>
+    <script src="src/countdown.js"></script>
+    <style>
+        html, body {
+            padding: 0;
+            margin: 0;
+            font-size: 16px;
+        }
+        .inp-box, .btn-start, .pre-console {
+            margin: 1rem;
+        }
+        .inp-box {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 10rem;
+            height: 1.75rem;
+            overflow: hidden;
+        }
+        .inp-time {
+            display: block;
+            width: 100%;
+            border: 0;
+            line-height: normal;
+            box-sizing: border-box;
+            height: 1.75rem;
+            outline: none;
+            border-radius: 4px;
+            padding-left: .5rem;
+            padding-right: .5rem;
+        }
+        .btn-start {
+            width: 10rem;
+            height: 2rem;
+            line-height: 2rem;
+            text-align: center;
+            border: 1px solid #28a745;
+            border-radius: 4px;
+            background-color: #28a745;
+            color: #fff;
+            user-select: none;
+            cursor: pointer;
+        }
+        .btn-start:hover {
+            background-color: #23923c;
+        }
+        .btn-start:active {
+            background-color: #208637;
+        }
+        .btn-start[data-disabled] {
+            cursor: not-allowed;
+            background-color: #aaa;
+            border-color: #aaa;
+        }
+        .pre-console {
+            display: none;
+            background: #ececec;
+            padding: .5rem;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="inp-box">
+        <input class="inp-time" id="inpTime" value="10" type="text" placeholder="输入倒计时秒数">
+    </div>
+    <div class="btn-start" id="btnStart">点此开始倒计时!</div>
+    <pre class="pre-console" id="preConsole"></pre>
+    <script>
+        var inpTime = document.getElementById('inpTime');
+        var btnStart = document.getElementById('btnStart');
+        var preConsole = document.getElementById('preConsole');
+
+        var startCountdown = function() {
+            var seconds = +inpTime.value.trim();
+
+            if (btnStart.hasAttribute('data-disabled')) {
+                return;
+            }
+
+            btnStart.setAttribute('data-disabled', true);
+            preConsole.style.display = 'none';
+
+            var timer = countdown(seconds, function(remeaningSeconds) {
+                btnStart.innerText = '倒计时 ' + remeaningSeconds + ' 秒';
+            }, function() {
+                btnStart.removeAttribute('data-disabled');
+                btnStart.innerText = '点此开始倒计时!';
+                printInfo(timer, new Date());
+            });
+        };
+
+        var printInfo = function(timer, endTime) {
+            var message = [];
+            var timeUsed = endTime.getTime() - timer.getStartTime().getTime();
+            var deviation = (timeUsed - timer.getTotalSeconds() * 1000);
+
+            message.push('总时间: ' + timer.getTotalSeconds());
+            message.push('实际耗时: ' + (timeUsed) / 1000);
+            message.push('误差时间: ' + deviation  + 'ms' + (deviation > 1000 ? ('(定时器被冻结' + (deviation - 1000) + 'ms)') : ''));
+            message.push('开始时间: ' + timer.getStartTime());
+            message.push('结束时间: ' + endTime);
+
+            preConsole.innerText = message.join('\n');
+            preConsole.style.display = 'block';
+        };
+
+        btnStart.addEventListener('click', startCountdown, false);
+
+    </script>
+</body>
+</html>
